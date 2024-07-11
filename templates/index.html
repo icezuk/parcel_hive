@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Mouse Movement and Webcam Capture</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/socket.io/3.0.3/socket.io.js"></script>
+</head>
+<body>
+    <h1>Move your mouse and click to capture an image</h1>
+    <div id="images"></div>
+    <script>
+        document.addEventListener('DOMContentLoaded', (event) => {
+            var socket = io();
+
+            // Send mouse movement data to the server
+            document.addEventListener('mousemove', (event) => {
+                socket.emit('mouse_move', { x: event.clientX, y: event.clientY });
+            });
+
+            // Send mouse click data to the server
+            document.addEventListener('click', (event) => {
+                socket.emit('mouse_click', { x: event.clientX, y: event.clientY });
+            });
+
+            // Handle image captured event
+            socket.on('image_captured', (data) => {
+                var img = new Image();
+                img.src = data.image_path;
+                document.getElementById('images').appendChild(img);
+            });
+        });
+    </script>
+</body>
+</html>
