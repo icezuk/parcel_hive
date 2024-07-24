@@ -4,6 +4,8 @@ import sqlite3
 import cv2
 import time
 import os
+import threading
+
 
 app = Flask(__name__)
 socketio = SocketIO(app)
@@ -90,7 +92,31 @@ def handle_mouse_click(data):
         save_to_db(x, y, image_filename)
         emit('image_captured', {'image_path': f'/static/{image_filename}'})
 
+# Thread function to handle mouse tracking
+
+def mouse_tracking():
+    while True:
+        capture_image()
+        time.sleep(1)
+
+
+# Thread function to handle webcam capture
+
+def webcam_capture():
+    while True:
+        capture_image()
+        time.sleep(1)
+
 # Check name
+
 if __name__ == '__main__':
     init_db()
+
+    mouse_thread = threading.Thread(target=mouse_tracking)
+    mouse_thread.start()
+
+    webcam_thread = threading.Thread(target=webcam_capture)
+    webcam_thread.start()
+
+    
     socketio.run(app, debug=True)
