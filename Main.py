@@ -9,10 +9,12 @@ app = Flask(__name__)
 socketio = SocketIO(app)
 
 # Ensure the static directory exists
+
 if not os.path.exists('static'):
     os.makedirs('static')
 
-# Initialize SQLite database
+# Initialize SQL database
+
 def init_db():
     conn = sqlite3.connect('mouse_data.db')
     cursor = conn.cursor()
@@ -28,6 +30,7 @@ def init_db():
     conn.close()
 
 # Function to save mouse coordinates and image path to database
+
 def save_to_db(x, y, image_path):
     conn = sqlite3.connect('mouse_data.db')
     cursor = conn.cursor()
@@ -36,6 +39,7 @@ def save_to_db(x, y, image_path):
     conn.close()
 
 # Function to capture an image from the webcam
+
 def capture_image():
     cap = cv2.VideoCapture(0)
     ret, frame = cap.read()
@@ -50,11 +54,13 @@ def capture_image():
     return None
 
 # Route to serve the web page
+
 @app.route('/')
 def index():
     return render_template('index.html')
 
-# Route to fetch mouse coordinates and images
+# Routee to fetch mouse coordinates and images
+
 @app.route('/data')
 def fetch_data():
     conn = sqlite3.connect('mouse_data.db')
@@ -64,14 +70,16 @@ def fetch_data():
     conn.close()
     return render_template('data.html', rows=rows)
 
-# WebSocket event to handle mouse movements
+# WebSocket to handle mouse movements
+
 @socketio.on('mouse_move')
 def handle_mouse_move(data):
     x = data['x']
     y = data['y']
     print(f'Mouse moved to: ({x}, {y})')
 
-# WebSocket event to handle mouse click
+# WebSocket to handle mouse click
+
 @socketio.on('mouse_click')
 def handle_mouse_click(data):
     x = data['x']
@@ -82,6 +90,7 @@ def handle_mouse_click(data):
         save_to_db(x, y, image_filename)
         emit('image_captured', {'image_path': f'/static/{image_filename}'})
 
+# Check name
 if __name__ == '__main__':
     init_db()
     socketio.run(app, debug=True)
