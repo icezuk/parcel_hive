@@ -12,16 +12,19 @@
             var socket = io();
 
             // Send mouse movement data to the server
+            
             document.addEventListener('mousemove', (event) => {
                 socket.emit('mouse_move', { x: event.clientX, y: event.clientY });
             });
 
             // Send mouse click data to the server
+            
             document.addEventListener('click', (event) => {
                 socket.emit('mouse_click', { x: event.clientX, y: event.clientY });
             });
 
-            // Handle image captured event
+            // Handle image captured
+            
             socket.on('image_captured', (data) => {
                 var img = new Image();
                 img.src = data.image_path;
